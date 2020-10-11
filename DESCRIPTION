@@ -1,0 +1,27 @@
+Package: phynotate
+Title: A library of Shiny modules for dynamic annotation of phylogenetic trees 
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Teofil",
+           family = "Nakov",
+           role = c("aut", "cre"),
+           email = "teofiln@gmail.com")
+Description: Shiny modules to draw, annotate, and export phylogenetic trees.
+License: MIT + file LICENSE
+Imports: 
+    ggtree,
+    ggplot2,
+    dplyr,
+    shiny,
+    ape, 
+    purrr, 
+    rlang, 
+    stringr, 
+    treeio, 
+    viridis,
+    colourpicker,
+    shinyjs
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.1
+Language: en-US
