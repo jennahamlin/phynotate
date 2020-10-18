@@ -2,6 +2,8 @@
 #'
 #' @param id character, namespace id
 #' @param phylogeny object of class `phylo` to draw
+#' @param modules modules to include in the tree-drawing application (or page). 
+#'                See `?show_modules` for available options
 #'
 #' @return UI and server logic for plotting and interactive modification of a phylogeny
 #'
@@ -10,154 +12,65 @@
 #' @example /man/examples/draw.R
 #'
 #' @export
-draw_server <- function(id, phylogeny) {
+draw_server <- function(id, phylogeny, modules = "L") {
   shiny::moduleServer(
     id = id,
     module = function(input, output, session) {
       ns <- session$ns
+      
       react_list <- reactiveValues()
-      lapply(names(param_list), function(x)
-        react_list[[x]] <- param_list[[x]])
+      lapply(names(param_list), function(x) {
+        react_list[[x]] <- param_list[[x]]
+      })
+      
+      R <- lapply(strsplit(modules, "")[[1]], function(x) {
+        rlang::exec(srv_list()[[x]], list(id = x))
+      })
       
       observe({
-        lapply(names(input), function(x)
-          react_list[[x]] <- input[[x]])
+        RR <- lapply(1:length(R), function(x) R[[x]]())
+        RR <- unlist(RR, recursive = FALSE)
+        
+        lapply(names(RR), function(i) {
+          react_list[[i]] <- RR[[i]]
+        })
       })
       
       observeEvent(input$clear_formatting, {
-        lapply(names(param_list), function(x)
-          react_list[[x]] <- param_list[[x]])
+        lapply(names(param_list), function(x) {
+          react_list[[x]] <- param_list[[x]]
+        })
         shinyjs::reset("control_panel")
       })
       
-      output$phy_plot <- shiny::renderPlot({
+      output$phy_plot <- shiny::renderPlot(
+        width = function() react_list[["width"]],
+        height = function() react_list[["height"]],
+        res = 96,
+        {
         draw_tree(tree = phylogeny, par_list = react_list)
       })
     }
   )
 }
 
-#' @rdname draw_srv
+#' @rdname draw_server
 #'
 #' @description Module UI
-#' @param id
 #'
 #' @export
-draw_ui <- function(id) {
+draw_ui <- function(id, modules = "L") {
   ns <- shiny::NS(id)
   shiny::tagList(shiny::fluidRow(
     shiny::column(
       width = 3,
       shinyjs::useShinyjs(),
       id = ns("control_panel"),
-      # layout
-      shinyWidgets::prettyCheckbox(
-        inputId = "expand_layout",
-        label = "Layout",
-        value = FALSE
-      ),
-      shiny::conditionalPanel(
-        condition = "input.expand_layout == true",
-        shiny::wellPanel(
-          shiny::selectInput(
-            inputId = ns("tree_layout"),
-            label = "Tree layout",
-            choices = c('rectangular', 'slanted', 'circular', 'fan', 'radial'),
-            selected = "slanted"
-          ),
-          shiny::selectInput(
-            inputId = ns("tree_direction"),
-            label = "Tree direction",
-            choices = c('right', 'left', 'up', 'down'),
-            selected = "right"
-          )
-        )
-      ),
-      # branches
-      shinyWidgets::prettyCheckbox(
-        inputId = "expand_branches",
-        label = "Branches",
-        value = FALSE
-      ),
-      shiny::conditionalPanel(
-        condition = "input.expand_branches == true",
-        shiny::wellPanel(
-          shiny::numericInput(
-            inputId = ns("branch_size"),
-            label = "Branch line weight",
-            min = 0,
-            max = 5,
-            value = 0.5,
-            step = 0.5
-          ),
-          colourpicker::colourInput(
-            inputId = ns("branch_color"),
-            label = "Color",
-            value = "grey45"
-          )
-        )
-      ),
-      # tips
-      shinyWidgets::prettyCheckbox(
-        inputId = "expand_tips",
-        label = "Tips",
-        value = FALSE
-      ),
-      shiny::conditionalPanel(
-        condition = "input.expand_tips == true",
-        shiny::wellPanel(
-          shiny::helpText("Likely illegible for large trees"),
-          shinyWidgets::prettyCheckbox(
-            inputId = ns("show_tip_labels"),
-            label = "Show tip labels",
-            value = FALSE
-          ),
-          shiny::numericInput(
-            inputId = ns("tip_font_size"),
-            label = "Font size",
-            min = 5,
-            max = 20,
-            value = 5,
-            step = 1
-          ),
-          shiny::numericInput(
-            inputId = ns("tip_label_offset"),
-            label = "Offset",
-            min = 0,
-            max = 5,
-            value = 1,
-            step = 0.01
-          ),
-          colourpicker::colourInput(
-            inputId = ns("tip_color"),
-            label = "Color",
-            value = "grey45"
-          )
-        )
-      ),
       
-      # additionals
-      shinyWidgets::prettyCheckbox(
-        inputId = "expand_misc",
-        label = "Miscellaneous",
-        value = FALSE
-      ),
-      shiny::conditionalPanel(
-        condition = "input.expand_misc == true",
-        shiny::wellPanel(
-          shiny::numericInput(
-            inputId = ns("open_angle"),
-            label = "Open angle",
-            min = 0,
-            max = 360,
-            value = 10,
-            step = 5
-          ),
-          shiny::helpText(
-            "Space in degrees between the first and last tip when tree layout is 'fan'. Useful for drawing semi-circular or pizza slice trees."
-          )
-        )
-      ),
+      tagList(lapply(strsplit(modules, "")[[1]], function(x) {
+        rlang::exec(uis_list()[[x]], list(id = ns(x)))
+      })),
+      
       shiny::actionButton(inputId = ns("clear_formatting"), label = "Clear formatting"),
     ),
     shiny::column(width = 6, shiny::plotOutput(outputId = ns("phy_plot")))
@@ -174,15 +87,15 @@ param_list <- list(
   open_angle = 10,
   branch_size = 0.5,
   branch_color = "grey45",
-  tip_color = "grey45"
+  tip_color = "grey45",
+  width = 200,
+  height = 500
 )
 
 draw_tree <- function(tree, par_list = param_list) {
   if (!par_list[["tree_layout"]] %in% c('rectangular', 'circular', 'slanted', 'fan', 'radial')) {
     stop("The selected tree layout is not supported.")
   }
-  
-  agemax <- tree %>% ape::branching.times() %>% max()
   
   g <-
     ggtree::ggtree(
@@ -196,7 +109,7 @@ draw_tree <- function(tree, par_list = param_list) {
   tree_flip(g = g, par_list = par_list)
 }
 
-add_tips <- function(g, size, color, offset) {
+add_tips <- function(g, size, color, offset, rotation, justification) {
   plot_data <- g$data[g$data$isTip == TRUE,]
   g + geom_text(
     data = plot_data,
@@ -206,24 +119,50 @@ add_tips <- function(g, size, color, offset) {
       label = .data$label
     ),
     size = size,
-    color = color
+    color = color,
+    angle = rotation,
+    hjust = justification
   )
 }
 
 tree_flip <- function(g, par_list = param_list) {
+  rot <- 0 # tip label rotation
+  just <- 0 # tip label justification 
+  
+  if (par_list[["show_tip_labels"]]) {
+    pad <- c(0.2, 1.5)
+  } else {
+    pad <- c(0.2, 0.2)
+  }
+  
+  if (par_list[["tree_direction"]] %in% c("left", "down")) {
+    pad <- rev(pad)
+  }
+  
   if (par_list[["tree_layout"]] %in% c("rectangular", "slanted")) {
     if (par_list[["tree_direction"]] == "up") {
-      g <- g + ggplot2::coord_flip()
+      g <- g + 
+        ggplot2::coord_flip() +
+        scale_x_continuous(expand = expansion(mult = pad))
+      rot <- 90
     }
     
     if (par_list[["tree_direction"]] == "down") {
       g <- g +
         ggplot2::coord_flip() +
-        ggplot2::scale_x_reverse()
+        ggplot2::scale_x_reverse(expand = expansion(mult = pad))
+      rot <- 270
     }
     
     if (par_list[["tree_direction"]] == "left") {
-      g <- g + ggplot2::scale_x_reverse()
+      g <- g + 
+        ggplot2::scale_x_reverse(expand = expansion(mult = pad))
+      just <- 1
+    }
+    
+    if (par_list[["tree_direction"]] == "right") {
+      g <- g + 
+        scale_x_continuous(expand = expansion(mult = pad))
     }
     
     if (par_list[["show_tip_labels"]] == TRUE) {
@@ -231,7 +170,9 @@ tree_flip <- function(g, par_list = param_list) {
         g = g,
         size = par_list[["tip_font_size"]],
         color = par_list[["tip_color"]],
-        offset = par_list[["tip_label_offset"]]
+        offset = par_list[["tip_label_offset"]],
+        rotation = rot,
+        justification = just
       )
     }
   }
@@ -241,8 +182,6 @@ tree_flip <- function(g, par_list = param_list) {
     ggplot2::theme(axis.line = ggplot2::element_blank()) +
     ggplot2::theme(axis.title = ggplot2::element_blank()) +
     ggplot2::theme(axis.ticks = ggplot2::element_blank()) +
-    ggplot2::theme(plot.background = ggplot2::element_rect(color = "black", size = 1)) +
-    ggplot2::theme(plot.margin = unit(rep(.1, 4), "in"))
-  
+    ggplot2::theme(plot.background = ggplot2::element_rect(color = "black", size = 1))
   return(g)
 }

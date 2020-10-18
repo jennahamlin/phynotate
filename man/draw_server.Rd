@@ -2,40 +2,45 @@
 % Please edit documentation in R/mod_draw.R
 \name{draw_server}
 \alias{draw_server}
+\alias{draw_ui}
 \title{Shiny module to draw a phylogeny}
 \usage{
-draw_server(id, phylogeny)
+draw_server(id, phylogeny, modules = "L")
+
+draw_ui(id, modules = "L")
 }
 \arguments{
 \item{id}{character, namespace id}
 
-\item{phylogeny}{object of class `phylo` to draw}
+\item{phylogeny}{object of class \code{phylo} to draw}
+
+\item{modules}{modules to include in the tree-drawing application (or page).
+See \code{?show_modules} for available options}
 }
 \value{
 UI and server logic for plotting and interactive modification of a phylogeny
 }
 \description{
-Shiny module to draw a phylogeny
+Module UI
 }
 \details{
 Trees with > 200 tips will in most cases be illegible. Tip names become illegible in smaller trees.
 }
 \examples{
-if (interactive()) {
-
+  if (interactive()) {
+  library(ape)
+  data("bird.orders")
   ui <- fluidPage(
     titlePanel("Shiny module to draw phylogenetic trees"),
     mainPanel(
-    draw_ui(id = "id")
+    draw_ui(id = "id", modules = "LPTB")
     )
   )
   
   server <- function(input, output, session) {
-    X <- ape::rtree(150)
-    draw_server(id = "id", phylogeny = X)
+    draw_server(id = "id", phylogeny = bird.orders, modules = "LPTB")
   }
   
   shinyApp(ui = ui, server = server)
 }
-
 }

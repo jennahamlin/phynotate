@@ -1,9 +1,0 @@
-TODO:
-
-4. nodes ?
-5. ladderize ?
-6. annotate clade widget
-7. color branches in subset
-8. color tips in subset
-9. map variable onto branch weight
-10.
