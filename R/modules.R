@@ -8,44 +8,41 @@
 
 show_modules <- function() {
   data.frame(
-    Initial = names(srv_list()),
-    Server = unlist(srv_list()),
-    UI = unlist(uis_list())
+    Initial = names(srv_list),
+    Server = unlist(srv_list),
+    UI = unlist(uis_list)
   )
 }
 
 #' @rdname show_modules
-#' @description **`srv_list()/uis_list()`** 
+#' @description **`srv_list/uis_list`** 
 #'              
-#' Simple functions that return the available server and ui
-#' components as named lists. These are used internally in \code{make_phynotate} to 
+#' Simple named lists with the available server and ui components.
+#' These are used internally in \code{make_phynotate} to 
 #' generate the application UI and server.
 #' 
 #' @export
+# ls(asNamespace("phynotate"))[grepl("server", ls(asNamespace("phynotate")))]
 
-srv_list <- function() {
-  list(
+srv_list <- list(
     "L" = "layout_server",
     "B" = "branches_server",
     "T" = "tips_server",
     "P" = "plotarea_server",
     "M" = "misc_server"
   )
-}
 
 #' @rdname show_modules
 #' 
 #' @export
 
-uis_list <- function() {
-  list(
+uis_list <- list(
     "L" = "layout_ui",
     "B" = "branches_ui",
     "T" = "tips_ui",
     "P" = "plotarea_ui",
     "M" = "misc_ui"
   )
-}
 
 #' @rdname show_modules
 #' 
@@ -73,7 +70,7 @@ layout_ui <- function(id) {
           inputId = ns("tree_layout"),
           label = "Tree layout",
           choices = c('rectangular', 'slanted', 'circular', 'fan', 'radial'),
-          selected = "slanted"
+          selected = "rectangular"
         ),
         shiny::selectInput(
           inputId = ns("tree_direction"),
@@ -204,6 +201,14 @@ tips_ui <- function(id) {
           inputId = ns("tip_color"),
           label = "Color",
           value = "grey45"
+        ),
+        shiny::numericInput(
+          inputId = ns("right_pad"),
+          label = "Right side padding",
+          min = 0,
+          max = 10,
+          value = 0.5,
+          step = 0.1
         )
       )
     )
@@ -220,7 +225,8 @@ tips_server <- function(id) {
         "show_tip_labels" = input[["show_tip_labels"]], 
         "tip_font_size" = input[["tip_font_size"]],
         "tip_label_offset" = input[["tip_label_offset"]],
-        "tip_color" = input[["tip_color"]]
+        "tip_color" = input[["tip_color"]],
+        "right_pad" = input[["right_pad"]]
       )))
     }
   )
@@ -254,14 +260,14 @@ plotarea_ui <- function(id) {
           label = "Plot height",
           min = 100,
           max = 1000,
-          value = 250
+          value = 600
         ),
         shiny::sliderInput(
           inputId = ns("width"),
           label = "Plot width",
           min = 100,
           max = 1000,
-          value = 250
+          value = 400
         )
       )
     )

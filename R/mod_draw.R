@@ -19,14 +19,13 @@ draw_server <- function(id, phylogeny, modules = "L") {
       ns <- session$ns
       
       react_list <- reactiveValues()
-      lapply(names(param_list), function(x) {
-        react_list[[x]] <- param_list[[x]]
-      })
       
+      # call the server functions of all required modules
       R <- lapply(strsplit(modules, "")[[1]], function(x) {
-        rlang::exec(srv_list()[[x]], list(id = x))
+        rlang::exec(srv_list[[x]], list(id = x))
       })
       
+      # listen to user changes in module UIs 
       observe({
         RR <- lapply(1:length(R), function(x) R[[x]]())
         RR <- unlist(RR, recursive = FALSE)
@@ -36,20 +35,7 @@ draw_server <- function(id, phylogeny, modules = "L") {
         })
       })
       
-      observeEvent(input$clear_formatting, {
-        lapply(names(param_list), function(x) {
-          react_list[[x]] <- param_list[[x]]
-        })
-        shinyjs::reset("control_panel")
-      })
-      
-      output$phy_plot <- shiny::renderPlot(
-        width = function() react_list[["width"]],
-        height = function() react_list[["height"]],
-        res = 96,
-        {
-        draw_tree(tree = phylogeny, par_list = react_list)
-      })
+      return(react_list)
     }
   )
 }
@@ -61,23 +47,15 @@ draw_server <- function(id, phylogeny, modules = "L") {
 #' @export
 draw_ui <- function(id, modules = "L") {
   ns <- shiny::NS(id)
-  shiny::tagList(shiny::fluidRow(
-    shiny::column(
-      width = 3,
-      shinyjs::useShinyjs(),
-      id = ns("control_panel"),
-      
+  # shiny::fluidRow(
       tagList(lapply(strsplit(modules, "")[[1]], function(x) {
-        rlang::exec(uis_list()[[x]], list(id = ns(x)))
-      })),
-      
-      shiny::actionButton(inputId = ns("clear_formatting"), label = "Clear formatting"),
-    ),
-    shiny::column(width = 6, shiny::plotOutput(outputId = ns("phy_plot")))
-  ))
+        rlang::exec(uis_list[[x]], list(id = ns(x)))
+      }))
+    # )
 }
 
 param_list <- list(
+  phylogeny = NULL,
   show_tip_labels = FALSE,
   tip_font_size = 5,
   tip_label_offset = 1,
@@ -130,7 +108,7 @@ tree_flip <- function(g, par_list = param_list) {
   just <- 0 # tip label justification 
   
   if (par_list[["show_tip_labels"]]) {
-    pad <- c(0.2, 1.5)
+    pad <- c(0.2, par_list[["right_pad"]])
   } else {
     pad <- c(0.2, 0.2)
   }
@@ -166,13 +144,22 @@ tree_flip <- function(g, par_list = param_list) {
     }
     
     if (par_list[["show_tip_labels"]] == TRUE) {
-      g <- add_tips(
-        g = g,
+      # g <- add_tips(
+      #   g = g,
+      #   size = par_list[["tip_font_size"]],
+      #   color = par_list[["tip_color"]],
+      #   offset = par_list[["tip_label_offset"]],
+      #   rotation = rot,
+      #   justification = just
+      # )
+      
+      g <- g + ggtree::geom_tiplab(
+        geom = "text",
         size = par_list[["tip_font_size"]],
         color = par_list[["tip_color"]],
         offset = par_list[["tip_label_offset"]],
-        rotation = rot,
-        justification = just
+        angle = rot,
+        hjust = just
       )
     }
   }

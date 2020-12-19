@@ -1,39 +1,50 @@
 #' Make a Shiny application to display, customize appearence, and annotate a phylogeny
-#' 
-#' @description \code{make_phynotate} generates a standalone Shiny app with one phylogeny and 
+#'
+#' @description `make_phynotate` generates a standalone `{shiny}` app with one phylogeny and
 #'              widgets for customizing its appearence. This is a wrapper around
-#'              \code{phynotate::draw_ui/server} to simplify usage when a the draw module is 
-#'              called as a standalone app. See `?draw_server` for an example of how to include 
-#'              the module in an existing app.
-#'                
-#' @param phylogeny an object of class \code{phylo} to display. Very large phylogenies 
-#'                  typically will be dificult to display legibly. 
-#' @param modules character string specifying the customizing widgets (shiny modules) to
-#'                include. The default is \code{"LPBT"} which stands for Layout, Plot area, 
+#'              `phynotate::main_ui/server` to simplify usage when a the main module is
+#'              called as a standalone app. See `?draw_server` and `?main_server` for an 
+#'              for info on how to include the modules in an existing app.
+#'
+#' @param phylogeny an object of class `phylo` to display. Very large phylogenies
+#'                  typically will be dificult to display legibly.
+#' @param draw_modules character string specifying the customizing widgets (shiny modules) to
+#'                include. The default is `"LPBT"` which stands for Layout, Plot area,
 #'                Branches, and Tips. Changing the content and order can be achieved by
-#'                changing the string, e.g., \code{"LP"} will only allow customization 
-#'                of the plot layout and size, whereas \code{"BTL"} will show widgets for
+#'                changing the string, e.g., `"LP"` will only allow customization
+#'                of the plot layout and size, whereas `"BTL"` will show widgets for
 #'                branches, tips, and layout in that order.
-#'                
+#' @param annotation_module logical. Whether to include the 'clade_annotation' module (`annotate_ui/server`)
+#'
 #' See \code{?modules} for details about the modules.
-#' 
-#' @examples 
+#'
+#' @examples
 #' if (interactive()) {
 #'    library(ape)
 #'    data(bird.orders)
-#'    make_phynotate(phylogeny=bird.orders, modules = "LPBT") 
+#'    make_phynotate(phylogeny=bird.orders, modules = "LPBT")
 #' }
-#' 
+#'
 #' @export
 
-make_phynotate <- function(phylogeny, modules = "LPTB") {
-  ui <- fluidPage(titlePanel("Shiny module to draw phylogenetic trees"),
-                  mainPanel(draw_ui(id = "id", modules = modules)))
+make_phynotate <- function(phylogeny = NULL, draw_modules = "LPTB", annotation_module = FALSE) {
+  ui <-
+    fluidPage(
+      titlePanel("Shiny module to draw phylogenetic trees"),
+      main_ui(
+        id = "main",
+        draw_modules = draw_modules,
+        anno_module = annotation_module
+      )
+    )
   
   server <- function(input, output, session) {
-    draw_server(id = "id",
-                phylogeny = phylogeny,
-                modules = modules)
+    main_server(
+      id = "main",
+      phylogeny = phylogeny,
+      draw_modules = draw_modules,
+      anno_module = annotation_module
+    )
   }
   
   shinyApp(ui = ui, server = server)

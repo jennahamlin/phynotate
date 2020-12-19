@@ -4,18 +4,20 @@
 \alias{make_phynotate}
 \title{Make a Shiny application to display, customize appearence, and annotate a phylogeny}
 \usage{
-make_phynotate(phylogeny, modules = "LPTB")
+make_phynotate(phylogeny, draw_modules = "LPTB", annotation_module = FALSE)
 }
 \arguments{
 \item{phylogeny}{an object of class \code{phylo} to display. Very large phylogenies
 typically will be dificult to display legibly.}
 
-\item{modules}{character string specifying the customizing widgets (shiny modules) to
+\item{draw_modules}{character string specifying the customizing widgets (shiny modules) to
 include. The default is \code{"LPBT"} which stands for Layout, Plot area,
 Branches, and Tips. Changing the content and order can be achieved by
 changing the string, e.g., \code{"LP"} will only allow customization
 of the plot layout and size, whereas \code{"BTL"} will show widgets for
-branches, tips, and layout in that order.
+branches, tips, and layout in that order.}
+
+\item{annotation_module}{logical. Whether to include the 'clade_annotation' module (\code{annotate_ui/server})
 
 See \code{?modules} for details about the modules.}
 }
@@ -30,7 +32,7 @@ the module in an existing app.
 if (interactive()) {
    library(ape)
    data(bird.orders)
-   make_phynotate(phylogeny=bird.orders, modules = "LPBT") 
+   make_phynotate(phylogeny=bird.orders, modules = "LPBT")
 }
 
 }

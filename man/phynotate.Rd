@@ -3,5 +3,8 @@
 \docType{package}
 \name{phynotate}
 \alias{phynotate}
-\title{Phynotate: Shiny modules for plotting, customization, and export of phylogeny}
+\title{Phynotate}
+\description{
+Shiny modules for plotting, customization, and export of phylogeny
+}
 \keyword{package}
