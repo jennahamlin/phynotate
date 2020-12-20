@@ -1,12 +1,33 @@
 
 ## phynotate
 
-This R package is a collection of `{shiny}` modules for interactive
-annotation of phylogeny plots. There are two main ways to use the
-modules, in an interactive `R` session or by ‘embedding’ in an existing
-`{shiny}` app.
+`phynotate` is a collection of `{shiny}` modules for interactive
+annotation of phylogeny plots. You can install it (to test) from GitHub
+using:
 
-### Using `phynotate` in interactive `R` sessions
+``` r
+library(devtools)
+install_github("teofiln/phynotate")
+```
+
+### Motivation
+
+`phynotate` is partly motivated by
+[`TinselR`](https://github.com/jennahamlin/tinselR) written primarily by
+[Jenna Hamlin](https://github.com/jennahamlin) from the CDC.
+Collaborating on some of the functionality of `TinselR`, it became clear
+that there is a lot more that we can do in terms of vizualizing and
+annotating phylogenies using `{shiny}`. So `phynotate` started as a
+general purpose package of modules that allows one to spin-up custom
+`{shiny}` apps that use `ggtree` and `ggplot2` to display and annotate
+trees.
+
+### Usage
+
+There are two main ways to use the modules, in an interactive `R`
+session or by ‘embedding’ in an existing `{shiny}` app.
+
+#### Using `phynotate` in interactive `R` sessions
 
 In many cases we either obtain a phylogeny (or other tree-like structure
 that can be converted to an object of class `phylo`) by running some
@@ -49,7 +70,7 @@ make_phynotate(phylogeny = Trees[[54]], draw_modules = "LPTB", annotation_module
 ![`phynotate` started from a local `R`
 session.](man/figures/trees-54.png)
 
-### Embedding `phynotate` modules in larger `{shiny}` apps
+#### Embedding `phynotate` modules in larger `{shiny}` apps
 
 `phynotate` is entirely made up of `{shiny}` modules and their helpers
 (mostly not exported) or wrappers (like `make_phynotate()`). If you have
@@ -92,15 +113,6 @@ shinyApp(ui = ui, server = server)
 
 ![`phynotate` embedded in a larger `{shiny}`
 app.](man/figures/phynotate-as-a-tab.png)
-
-### Instalation
-
-Install `phynotate` from GitHub using:
-
-``` r
-library(devtools)
-install_github("teofiln/phynotate")
-```
 
 ### TODO:
 

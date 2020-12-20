@@ -4,9 +4,24 @@ output: github_document
 
 ## phynotate
 
-This R package is a collection of `{shiny}` modules for interactive annotation of phylogeny plots. There are two main ways to use the modules, in an interactive `R` session or by 'embedding' in an existing `{shiny}` app.
+`phynotate` is a collection of `{shiny}` modules for interactive annotation of phylogeny plots. You can install it (to test) from GitHub using:
 
-### Using `phynotate` in interactive `R` sessions
+```{r, eval = FALSE}
+library(devtools)
+install_github("teofiln/phynotate")
+```
+
+### Motivation
+
+`phynotate` is partly motivated by [`TinselR`](https://github.com/jennahamlin/tinselR) written primarily by [Jenna Hamlin](https://github.com/jennahamlin) from the CDC. Collaborating on some of the functionality of `TinselR`, it became clear that there is a lot more that we can do in terms of vizualizing and annotating phylogenies using `{shiny}`. So `phynotate` started as a general purpose package of modules that allows one to spin-up custom `{shiny}` apps that use `ggtree` and `ggplot2` to display and annotate trees.
+
+
+
+### Usage
+
+There are two main ways to use the modules, in an interactive `R` session or by 'embedding' in an existing `{shiny}` app.
+
+#### Using `phynotate` in interactive `R` sessions
 
 In many cases we either obtain a phylogeny (or other tree-like structure that can be converted to an object of class `phylo`) by running some analysis in `R`, or we load a phylogeny created by another program into `R` for further analyses or visualization. Although there is certainly no reason why we couldn't write `ape`, `phytools`, or `ggtree` code to create and save a custom plot of our tree, often, we just want to take a quick look, make some minor edits by clicking with a mouse and close the tree. This last part is a bit more difficult for a novice user of phylogeny plotting packages that is acustomed to an interface like `FigTree` or `Dendroscope`. `phynotate` attempts to fill this niche. To save a some time on making a decent figure through a GUI without writing the `phylo` object to file and leaving the `R` session.
 
@@ -35,7 +50,7 @@ make_phynotate(phylogeny = Trees[[54]], draw_modules = "LPTB", annotation_module
 
 ![`phynotate` started from a local `R` session.](man/figures/trees-54.png)
 
-### Embedding `phynotate` modules in larger `{shiny}` apps
+#### Embedding `phynotate` modules in larger `{shiny}` apps
 
 `phynotate` is entirely made up of `{shiny}` modules and their helpers (mostly not exported) or wrappers (like `make_phynotate()`). If you have an existing shiny app, where you would like to display a phylogeny and allow some modifications to it, perhaps even downloads, then calling the `phynotate` modules might be a good option. 
 
@@ -74,15 +89,6 @@ shinyApp(ui = ui, server = server)
 ```
 
 ![`phynotate` embedded in a larger `{shiny}` app.](man/figures/phynotate-as-a-tab.png)
-
-### Instalation
-
-Install `phynotate` from GitHub using:
-
-```{r, eval = FALSE}
-library(devtools)
-install_github("teofiln/phynotate")
-```
 
 ### TODO:
 
