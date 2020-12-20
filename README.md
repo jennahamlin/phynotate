@@ -60,6 +60,7 @@ allow some modifications to it, perhaps even downloads, then calling the
 For example (modified from the help of `phynotate::main_server()`):
 
 ``` r
+library(shiny)
 library(phynotate)
 
 ui <- shiny::navbarPage(
@@ -70,7 +71,7 @@ ui <- shiny::navbarPage(
     title = "Vizualize and download trees",
     phynotate::main_ui(
       id = "id",
-      modules = "LPTB",
+      draw_modules = "LPTB",
       anno_module = FALSE
     )
   )
@@ -83,11 +84,14 @@ server <- function(input, output, session) {
   # Send a user selected tree to the phynotate viz module
   main_server(id = "id",
               phylogeny = input[["user_selected_tree"]],
-              modules = "LPTB")
+              draw_modules = "LPTB")
 }
 
 shinyApp(ui = ui, server = server)
 ```
+
+![`phynotate` embedded in a larger `{shiny}`
+app.](man/figures/phynotate-as-a-tab.png)
 
 ### Instalation
 
