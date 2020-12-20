@@ -1,3 +1,7 @@
+---
+output: github_document
+---
+
 ## phynotate
 
 This R package is a collection of `{shiny}` modules for interactive annotation of phylogeny plots. There are two main ways to use the modules, in an interactive `R` session or by 'embedding' in an existing `{shiny}` app.
