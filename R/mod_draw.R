@@ -47,11 +47,9 @@ draw_server <- function(id, phylogeny, modules = "L") {
 #' @export
 draw_ui <- function(id, modules = "L") {
   ns <- shiny::NS(id)
-  # shiny::fluidRow(
       tagList(lapply(strsplit(modules, "")[[1]], function(x) {
         rlang::exec(uis_list[[x]], list(id = ns(x)))
       }))
-    # )
 }
 
 param_list <- list(
@@ -75,15 +73,24 @@ draw_tree <- function(tree, par_list = param_list) {
     stop("The selected tree layout is not supported.")
   }
   
-  g <-
-    ggtree::ggtree(
-      tr = tree,
-      layout = par_list[["tree_layout"]],
-      size = par_list[["branch_size"]],
-      color = par_list[["branch_color"]],
-      open.angle = par_list[["open_angle"]]
-    )
+  list_of_params <- list(
+    tr = tree,
+    layout = par_list[["tree_layout"]],
+    size = par_list[["branch_size"]],
+    color = par_list[["branch_color"]],
+    open.angle = par_list[["open_angle"]]
+  )
   
+  if (!is.null(par_list[["ladderize"]])) {
+     list_of_params <- c(
+       list_of_params, 
+       ladderize = TRUE, 
+       right = ifelse(par_list[["ladderize"]] == "right", TRUE, FALSE)
+       )
+  }
+  
+  g <- rlang::exec(.fn = ggtree::ggtree, !!!list_of_params)
+
   tree_flip(g = g, par_list = par_list)
 }
 

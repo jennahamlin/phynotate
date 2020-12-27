@@ -77,6 +77,12 @@ layout_ui <- function(id) {
           label = "Tree direction",
           choices = c('right', 'left', 'up', 'down'),
           selected = "right"
+        ),
+        shiny::selectInput(
+          inputId = ns("ladderize"),
+          label = "Ladderize",
+          choices = c("right", "left"),
+          selected = NULL
         )
       )
     )
@@ -91,7 +97,8 @@ layout_server <- function(id) {
     module = function(input, output, session) {
       return(reactive(list(
         "tree_layout" = input[["tree_layout"]], 
-        "tree_direction" = input[["tree_direction"]]
+        "tree_direction" = input[["tree_direction"]],
+        "ladderize" = input[["ladderize"]]
       )))
     }
   )
