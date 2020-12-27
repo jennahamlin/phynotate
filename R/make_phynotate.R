@@ -28,6 +28,9 @@
 #' @export
 
 make_phynotate <- function(phylogeny = NULL, draw_modules = "LPTB", annotation_module = FALSE) {
+  
+  stopifnot("Please supply a phylogeny." = !is.null(phylogeny))
+  
   ui <-
     fluidPage(
       titlePanel("Shiny module to draw phylogenetic trees"),

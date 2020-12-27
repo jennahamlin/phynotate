@@ -86,11 +86,13 @@ annotate_server <- function(id, react_list, plot_inputs) {
               label = input[["anno_name"]],
               offset = label_offset
             )
+          
+          react_list[["tree_plot"]] <- anno_phy
+          
           at <- annotations_table()
           at <- rbind(at, c(input[["anno_name"]], label_offset))
           names(at) <- c("Name", "Nudge")
           annotations_table(at)
-          react_list[["tree_plot"]] <- anno_phy
         }
       })
       
