@@ -121,17 +121,15 @@ implemented:
 
 1.  tips missing for circular layouts
 2.  nodes
-3.  ladderize
-4.  root
-5.  prune
-6.  name clade
-7.  color branches in clade
-8.  color tips in clade
-9.  map variable onto branch weight
-10. map variable onto branch color
-11. map variable onto tip symbol
-12. map variable onto tip color
-13. map variable onto node symbol
-14. map variable onto node color
-15. scale bar
-16. axis
+3.  root
+4.  prune
+5.  name clade
+6.  color branches in clade
+7.  color tips in clade
+8.  map variable onto branch color
+9.  map variable onto tip symbol
+10. map variable onto tip color
+11. map variable onto node symbol
+12. map variable onto node color
+13. scale bar
+14. axis
