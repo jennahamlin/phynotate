@@ -17,3 +17,6 @@
 #' @importFrom rlang .data exec !!!
 #' 
 "_PACKAGE"
+
+#' @importFrom utils globalVariables
+utils::globalVariables("palettes")

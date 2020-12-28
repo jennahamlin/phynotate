@@ -188,10 +188,49 @@ branches_ui <- function(id, phy_data) {
           ))
           }
         ),
-        colourpicker::colourInput(
-          inputId = ns("branch_color"),
-          label = "Color",
-          value = "grey45"
+        tags$hr(),
+        shiny::radioButtons(
+          inputId = ns("branch_color_type"),
+          label = "Branch color",
+          choices = c("Variable", "Fixed"),
+          selected = "Fixed", 
+          inline = TRUE,
+          width = "100%"
+        ),
+        shiny::conditionalPanel(
+          condition = paste0("input['",ns("branch_color_type"),"'] === 'Fixed'"),
+            colourpicker::colourInput(
+              inputId = ns("branch_color"),
+              label = "Color",
+              value = "grey45"
+            )
+        ),
+        shiny::conditionalPanel(
+          condition = paste0("input['",ns("branch_color_type"),"'] === 'Variable'"),
+          if (is.null(mappable_vars)) {
+            helpText("Appears that the input tree does not have associated data.")
+          } else {
+            tagList(
+              shiny::selectInput(
+                inputId = ns("branch_color_variable"),
+                label = "Select variable to map onto branch weight",
+                choices = mappable_vars,
+                multiple = FALSE,
+                width = "100%"
+              ),
+              shiny::textInput(
+                inputId = ns("branch_color_name"),
+                label = "Set the name for the branch color scale",
+                width = "100%"
+              ),
+              shiny::selectInput(
+                inputId = ns("branch_color_palette"),
+                label = "Set the palette for the branch color scale",
+                choices = list(Viridis = c("viridis", "magma", "inferno", "plasma", "cividis"),
+                               RColorBrewer = c("BrBG", "PiYG", "PRGn", "PuOr", "RdBu", "RdYlBu")),
+                width = "100%"
+              ))
+          }
         )
       )
     )
@@ -212,7 +251,11 @@ branches_server <- function(id, phy_data) {
         "branch_size_name" = input[["branch_size_name"]],
         "branch_size_limits" = input[["branch_size_limits"]],
         
-        "branch_color" = input[["branch_color"]]
+        "branch_color_type" = input[["branch_color_type"]],
+        "branch_color_fixed" = input[["branch_color_fixed"]],
+        "branch_color_variable" = input[["branch_color_variable"]],
+        "branch_color_name" = input[["branch_color_name"]],
+        "branch_color_palette" = input[["branch_color_palette"]]
       )))
     }
   )

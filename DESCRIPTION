@@ -27,3 +27,5 @@ RoxygenNote: 7.1.1
 Language: en-US
 Suggests: 
     testthat
+Depends: 
+    R (>= 2.10)

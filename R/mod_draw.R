@@ -78,13 +78,17 @@ draw_tree <- function(tree, par_list = param_list) {
   list_of_params <- list(
     tr = tidytree::as.phylo(tree),
     layout = par_list[["tree_layout"]],
-    color = par_list[["branch_color"]],
     open.angle = par_list[["open_angle"]]
   )
   
   if (req(par_list[["branch_size_type"]]) == "Fixed") {
     list_of_params <- c(list_of_params,
                         size = par_list[["branch_size_fixed"]])
+  } 
+  
+  if (req(par_list[["branch_color_type"]]) == "Fixed") {
+    list_of_params <- c(list_of_params,
+                        color = par_list[["branch_color_fixed"]])
   } 
     
   if (!is.null(par_list[["ladderize"]])) {
@@ -99,11 +103,22 @@ draw_tree <- function(tree, par_list = param_list) {
   
   if (req(par_list[["branch_size_type"]]) == "Variable") {
     validate(need(isTruthy(par_list[["branch_size_variable"]]),
-                  message = " Appears that the input tree does not have associated data."))
+                  message = "Appears that the input tree does not have associated data."))
     g <-
       g + aes(size = req(tree[[par_list[["branch_size_variable"]]]])) +
       ggplot2::scale_size_continuous(name = par_list[["branch_size_name"]],
                                      range = par_list[["branch_size_limits"]])
+  }
+  
+  if (req(par_list[["branch_color_type"]]) == "Variable") {
+    validate(need(isTruthy(par_list[["branch_color_variable"]]),
+                  message = "Appears that the input tree does not have associated data."))
+    g <-
+      g + aes(color = req(tree[[par_list[["branch_color_variable"]]]])) +
+      ggplot2::scale_color_gradientn(
+        name = par_list[["branch_color_name"]],
+        colours = palettes[[ par_list[["branch_color_palette"]] ]]
+        )
   }
   
   tree_flip(g = g, par_list = par_list)
