@@ -28,28 +28,31 @@ srv_list
 
 uis_list
 
-layout_ui(id)
+layout_ui(id, phy_data)
 
-layout_server(id)
+layout_server(id, phy_data)
 
-branches_ui(id)
+branches_ui(id, phy_data)
 
-branches_server(id)
+branches_server(id, phy_data)
 
-tips_ui(id)
+tips_ui(id, phy_data)
 
-tips_server(id)
+tips_server(id, phy_data)
 
-plotarea_ui(id)
+plotarea_ui(id, phy_data)
 
-plotarea_server(id)
+plotarea_server(id, phy_data)
 
-misc_ui(id)
+misc_ui(id, phy_data)
 
-misc_server(id)
+misc_server(id, phy_data)
 }
 \arguments{
 \item{id}{namespace id}
+
+\item{phy_data}{the treedata or phylo object being plotted. This is useful
+to extract associated data that can be used to map variables onto tree aesthetics.}
 }
 \description{
 \strong{\code{show_modules()}}

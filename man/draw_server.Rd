@@ -7,12 +7,12 @@
 \usage{
 draw_server(id, phylogeny, modules = "L")
 
-draw_ui(id, modules = "L")
+draw_ui(id, phylogeny, modules = "L")
 }
 \arguments{
 \item{id}{character, namespace id}
 
-\item{phylogeny}{object of class \code{phylo} to draw}
+\item{phylogeny}{object of class \code{tbl_tree} or \code{phylo} to draw}
 
 \item{modules}{modules to include in the tree-drawing application (or page).
 See \code{?show_modules} for available options}

@@ -4,7 +4,11 @@
 \alias{make_phynotate}
 \title{Make a Shiny application to display, customize appearence, and annotate a phylogeny}
 \usage{
-make_phynotate(phylogeny, draw_modules = "LPTB", annotation_module = FALSE)
+make_phynotate(
+  phylogeny = NULL,
+  draw_modules = "LPTB",
+  annotation_module = FALSE
+)
 }
 \arguments{
 \item{phylogeny}{an object of class \code{phylo} to display. Very large phylogenies
@@ -22,17 +26,31 @@ branches, tips, and layout in that order.}
 See \code{?modules} for details about the modules.}
 }
 \description{
-\code{make_phynotate} generates a standalone Shiny app with one phylogeny and
+\code{make_phynotate} generates a standalone \code{{shiny}} app with one phylogeny and
 widgets for customizing its appearence. This is a wrapper around
-\code{phynotate::draw_ui/server} to simplify usage when a the draw module is
-called as a standalone app. See \code{?draw_server} for an example of how to include
-the module in an existing app.
+\code{phynotate::main_ui/server} to simplify usage when a the main module is
+called as a standalone app. See \code{?draw_server} and \code{?main_server} for an
+for info on how to include the modules in an existing app.
 }
 \examples{
+
+# working with `phylo` objects
 if (interactive()) {
    library(ape)
    data(bird.orders)
    make_phynotate(phylogeny=bird.orders, modules = "LPBT")
+}
+
+# working with `tbl_tree` or `treedata` objects
+if (interactive()) {
+   library(ape)
+   data(bird.orders)
+   library(tidytree)
+   library(dplyr)
+   
+   tidytree::as_tibble(bird.orders) \%>\%
+     dplyr::mutate(trait = runif(n = nrow(.), min = 0, max = 5)) \%>\%
+     phynotate::make_phynotate(phylogeny = .)
 }
 
 }
