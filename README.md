@@ -119,17 +119,28 @@ app.](man/figures/phynotate-as-a-tab.png)
 This is a work in progress and there are many features yet to be
 implemented:
 
-1.  tips missing for circular layouts
+1.  circular layouts
+
 2.  nodes
+
 3.  root
+
 4.  prune
+
 5.  name clade
+
 6.  color branches in clade
+
 7.  color tips in clade
-8.  map variable onto branch color
-9.  map variable onto tip symbol
-10. map variable onto tip color
-11. map variable onto node symbol
-12. map variable onto node color
-13. scale bar
-14. axis
+
+8.  scale bar
+
+9.  axis
+
+10. map variable onto tip symbol
+
+11. map variable onto tip color
+
+12. map variable onto node symbol
+
+13. map variable onto node color

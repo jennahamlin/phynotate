@@ -92,16 +92,18 @@ shinyApp(ui = ui, server = server)
 
 This is a work in progress and there are many features yet to be implemented:
 
-2. tips missing for circular layouts
+2. circular layouts
 4. nodes 
 5. root
 6. prune
 6. name clade
 7. color branches in clade
 8. color tips in clade
+
+13. scale bar
+14. axis
+
 11. map variable onto tip symbol
 12. map variable onto tip color
 11. map variable onto node symbol
 12. map variable onto node color
-13. scale bar
-14. axis
