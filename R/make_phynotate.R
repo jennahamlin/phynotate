@@ -19,10 +19,24 @@
 #' See \code{?modules} for details about the modules.
 #'
 #' @examples
+#' 
+#' # working with `phylo` objects
 #' if (interactive()) {
 #'    library(ape)
 #'    data(bird.orders)
 #'    make_phynotate(phylogeny=bird.orders, modules = "LPBT")
+#' }
+#' 
+#' # working with `tbl_tree` or `treedata` objects
+#' if (interactive()) {
+#'    library(ape)
+#'    data(bird.orders)
+#'    library(tidytree)
+#'    library(dplyr)
+#'    
+#'    tidytree::as_tibble(bird.orders) %>%
+#'      dplyr::mutate(trait = runif(n = nrow(.), min = 0, max = 5)) %>%
+#'      phynotate::make_phynotate(phylogeny = .)
 #' }
 #'
 #' @export
@@ -36,6 +50,7 @@ make_phynotate <- function(phylogeny = NULL, draw_modules = "LPTB", annotation_m
       titlePanel("Shiny module to draw phylogenetic trees"),
       main_ui(
         id = "main",
+        phylogeny = phylogeny,
         draw_modules = draw_modules,
         anno_module = annotation_module
       )

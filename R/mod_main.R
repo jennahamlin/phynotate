@@ -28,6 +28,7 @@ main_server <- function(id, phylogeny, draw_modules, anno_module = FALSE) {
       # create and populate a list of reactive values used to draw the phylogeny
       react_list <- reactiveValues()
       lapply(names(param_list), function(x) {
+        # default values to be updated later
         react_list[[x]] <- param_list[[x]]
       })
       
@@ -38,7 +39,8 @@ main_server <- function(id, phylogeny, draw_modules, anno_module = FALSE) {
       
       # make the plot object to be updated by annotation module
       observe({
-        react_list[["tree_plot"]] <- draw_tree(tree = react_list[["phylogeny"]], par_list = react_list)
+        react_list[["tree_plot"]] <-
+          draw_tree(tree = react_list[["phylogeny"]], par_list = react_list)
       })
       
       # render the plot with reactive dimensions
@@ -94,14 +96,14 @@ main_server <- function(id, phylogeny, draw_modules, anno_module = FALSE) {
 #' @rdname main_server
 #' @export
 
-main_ui <- function(id, draw_modules, anno_module = FALSE) {
+main_ui <- function(id, phylogeny, draw_modules, anno_module = FALSE) {
   ns <- NS(id)
   shiny::tagList(
     shiny::column(
       width = 3,
       shinyjs::useShinyjs(),
       id = ns("control_panel"),
-      draw_ui(id = ns("draw"), modules = draw_modules),
+      draw_ui(id = ns("draw"), phylogeny = phylogeny, modules = draw_modules),
       shiny::actionButton(inputId = ns("clear_formatting"), label = "Clear formatting")
     ),
     shiny::column(width = 6, shiny::plotOutput(
@@ -113,6 +115,6 @@ main_ui <- function(id, draw_modules, anno_module = FALSE) {
                     if (anno_module) {
                       annotate_ui(id = ns("anno"))
                     }
-                  }, )
+                  })
   )
 }

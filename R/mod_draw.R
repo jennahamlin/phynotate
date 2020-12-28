@@ -1,7 +1,7 @@
 #' Shiny module to draw a phylogeny
 #'
 #' @param id character, namespace id
-#' @param phylogeny object of class `phylo` to draw
+#' @param phylogeny object of class `tbl_tree` or `phylo` to draw
 #' @param modules modules to include in the tree-drawing application (or page). 
 #'                See `?show_modules` for available options
 #'
@@ -45,10 +45,10 @@ draw_server <- function(id, phylogeny, modules = "L") {
 #' @description Module UI
 #'
 #' @export
-draw_ui <- function(id, modules = "L") {
+draw_ui <- function(id, phylogeny, modules = "L") {
   ns <- shiny::NS(id)
       tagList(lapply(strsplit(modules, "")[[1]], function(x) {
-        rlang::exec(uis_list[[x]], list(id = ns(x)))
+        rlang::exec(uis_list[[x]], !!!list(id = ns(x), phy_data = phylogeny))
       }))
 }
 
@@ -61,7 +61,9 @@ param_list <- list(
   tree_direction = "right",
   time_axis_ticks = 10,
   open_angle = 10,
-  branch_size = 0.5,
+  branch_size_type = "fixed",
+  branch_size_fixed = 0.5,
+  branch_size_variable = NULL,
   branch_color = "grey45",
   tip_color = "grey45",
   width = 200,
@@ -74,28 +76,41 @@ draw_tree <- function(tree, par_list = param_list) {
   }
   
   list_of_params <- list(
-    tr = tree,
+    tr = tidytree::as.phylo(tree),
     layout = par_list[["tree_layout"]],
-    size = par_list[["branch_size"]],
     color = par_list[["branch_color"]],
     open.angle = par_list[["open_angle"]]
   )
   
+  if (req(par_list[["branch_size_type"]]) == "Fixed") {
+    list_of_params <- c(list_of_params,
+                        size = par_list[["branch_size_fixed"]])
+  } 
+    
   if (!is.null(par_list[["ladderize"]])) {
-     list_of_params <- c(
-       list_of_params, 
-       ladderize = TRUE, 
-       right = ifelse(par_list[["ladderize"]] == "right", TRUE, FALSE)
-       )
+    list_of_params <- c(
+      list_of_params,
+      ladderize = TRUE,
+      right = ifelse(par_list[["ladderize"]] == "right", TRUE, FALSE)
+    )
   }
   
   g <- rlang::exec(.fn = ggtree::ggtree, !!!list_of_params)
-
+  
+  if (req(par_list[["branch_size_type"]]) == "Variable") {
+    validate(need(isTruthy(par_list[["branch_size_variable"]]),
+                  message = " Appears that the input tree does not have associated data."))
+    g <-
+      g + aes(size = req(tree[[par_list[["branch_size_variable"]]]])) +
+      ggplot2::scale_size_continuous(name = par_list[["branch_size_name"]],
+                                     range = par_list[["branch_size_limits"]])
+  }
+  
   tree_flip(g = g, par_list = par_list)
 }
 
 add_tips <- function(g, size, color, offset, rotation, justification) {
-  plot_data <- g$data[g$data$isTip == TRUE,]
+  plot_data <- g$data[g$data$isTip == TRUE, ]
   g + geom_text(
     data = plot_data,
     aes(
@@ -151,15 +166,6 @@ tree_flip <- function(g, par_list = param_list) {
     }
     
     if (par_list[["show_tip_labels"]] == TRUE) {
-      # g <- add_tips(
-      #   g = g,
-      #   size = par_list[["tip_font_size"]],
-      #   color = par_list[["tip_color"]],
-      #   offset = par_list[["tip_label_offset"]],
-      #   rotation = rot,
-      #   justification = just
-      # )
-      
       g <- g + ggtree::geom_tiplab(
         geom = "text",
         size = par_list[["tip_font_size"]],

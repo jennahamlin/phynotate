@@ -53,9 +53,12 @@ uis_list <- list(
 #' example usage. 
 #' 
 #' @param id namespace id
+#' @param phy_data the treedata or phylo object being plotted. This is useful 
+#' to extract associated data that can be used to map variables onto tree aesthetics.
+#' 
 #' @export
 
-layout_ui <- function(id) {
+layout_ui <- function(id, phy_data) {
   ns <- NS(id)
   shiny::tagList(
     shiny::checkboxInput(
@@ -64,7 +67,7 @@ layout_ui <- function(id) {
       value = FALSE
     ),
     shiny::conditionalPanel(
-      condition = "input.expand_layout == true",
+      condition = "input.expand_layout === true",
       shiny::wellPanel(
         shiny::selectInput(
           inputId = ns("tree_layout"),
@@ -91,7 +94,7 @@ layout_ui <- function(id) {
 
 #' @rdname show_modules
 #' @export
-layout_server <- function(id) {
+layout_server <- function(id, phy_data) {
   shiny::moduleServer(
     id = id,
     module = function(input, output, session) {
@@ -115,9 +118,20 @@ layout_server <- function(id) {
 #' example usage.
 #' 
 #' @param id namespace id
+#' @param phy_data the treedata or phylo object being plotted. This is useful 
+#' to extract associated data that can be used to map variables onto tree aesthetics.
+#'  
 #' @export
-branches_ui <- function(id) {
+branches_ui <- function(id, phy_data) {
   ns <- NS(id)
+  
+  phy_data <- tidytree::as_tibble(phy_data)
+  if (ncol(phy_data) > 4) {
+    mappable_vars <- names(phy_data[ ,-(1:4)])
+  } else {
+    mappable_vars <- NULL
+  }
+
   shiny::tagList(
     shiny::checkboxInput(
       inputId = "expand_branches",
@@ -125,15 +139,54 @@ branches_ui <- function(id) {
       value = FALSE
     ),
     shiny::conditionalPanel(
-      condition = "input.expand_branches == true",
+      condition = "input.expand_branches === true",
       shiny::wellPanel(
-        shiny::numericInput(
-          inputId = ns("branch_size"),
-          label = "Branch line weight",
-          min = 0,
-          max = 5,
-          value = 0.5,
-          step = 0.5
+        shiny::radioButtons(
+          inputId = ns("branch_size_type"),
+          label = "Branch weight",
+          choices = c("Variable", "Fixed"),
+          selected = "Fixed", 
+          inline = TRUE,
+          width = "100%"
+          ),
+        shiny::conditionalPanel(
+          condition = paste0("input['",ns("branch_size_type"),"'] === 'Fixed'"),
+          shiny::numericInput(
+            inputId = ns("branch_size_fixed"),
+            label = "Set weight for all branches",
+            min = 0,
+            max = 5,
+            value = 0.5,
+            step = 0.1
+          )
+        ),
+        shiny::conditionalPanel(
+          condition = paste0("input['",ns("branch_size_type"),"'] === 'Variable'"),
+          if (is.null(mappable_vars)) {
+            helpText("Appears that the input tree does not have associated data.")
+          } else {
+            tagList(
+          shiny::selectInput(
+            inputId = ns("branch_size_variable"),
+            label = "Select variable to map onto branch weight",
+            choices = mappable_vars,
+            multiple = FALSE,
+            width = "100%"
+          ),
+          shiny::textInput(
+            inputId = ns("branch_size_name"),
+            label = "Set the name for the branch weight scale",
+            width = "100%"
+          ),
+          shiny::sliderInput(
+            inputId = ns("branch_size_limits"),
+            label = "Set the limits for the branch weight scale",
+            min = 0.1, 
+            max = 3,
+            value = c(0.3,1.3), 
+            width = "100%"
+          ))
+          }
         ),
         colourpicker::colourInput(
           inputId = ns("branch_color"),
@@ -147,12 +200,18 @@ branches_ui <- function(id) {
 
 #' @rdname show_modules
 #' @export
-branches_server <- function(id) {
+branches_server <- function(id, phy_data) {
   shiny::moduleServer(
     id = id,
     module = function(input, output, session) {
+      
       return(reactive(list(
-        "branch_size" = input[["branch_size"]], 
+        "branch_size_type" = input[["branch_size_type"]],
+        "branch_size_fixed" = input[["branch_size_fixed"]],
+        "branch_size_variable" = input[["branch_size_variable"]],
+        "branch_size_name" = input[["branch_size_name"]],
+        "branch_size_limits" = input[["branch_size_limits"]],
+        
         "branch_color" = input[["branch_color"]]
       )))
     }
@@ -170,8 +229,11 @@ branches_server <- function(id) {
 #' example usage.
 #' 
 #' @param id namespace id
+#' @param phy_data the treedata or phylo object being plotted. This is useful 
+#' to extract associated data that can be used to map variables onto tree aesthetics.
+#' 
 #' @export
-tips_ui <- function(id) {
+tips_ui <- function(id, phy_data) {
   ns <- NS(id)
   shiny::tagList(
     shiny::checkboxInput(
@@ -180,7 +242,7 @@ tips_ui <- function(id) {
       value = FALSE
     ),
     shiny::conditionalPanel(
-      condition = "input.expand_tips == true",
+      condition = "input.expand_tips === true",
       shiny::wellPanel(
         shiny::helpText("Likely illegible for large trees"),
         shiny::checkboxInput(
@@ -224,7 +286,7 @@ tips_ui <- function(id) {
 
 #' @rdname show_modules
 #' @export
-tips_server <- function(id) {
+tips_server <- function(id, phy_data) {
   shiny::moduleServer(
     id = id,
     module = function(input, output, session) {
@@ -250,8 +312,11 @@ tips_server <- function(id) {
 #' example usage.
 #' 
 #' @param id namespace id
+#' @param phy_data the treedata or phylo object being plotted. This is useful 
+#' to extract associated data that can be used to map variables onto tree aesthetics.
+#' 
 #' @export
-plotarea_ui <- function(id) {
+plotarea_ui <- function(id, phy_data) {
   ns <- NS(id)
   shiny::tagList(
     shiny::checkboxInput(
@@ -260,7 +325,7 @@ plotarea_ui <- function(id) {
       value = FALSE
     ),
     shiny::conditionalPanel(
-      condition = "input.expand_resize == true",
+      condition = "input.expand_resize === true",
       shiny::wellPanel(
         shiny::sliderInput(
           inputId = ns("height"),
@@ -282,7 +347,7 @@ plotarea_ui <- function(id) {
 }
 #' @rdname show_modules
 #' @export
-plotarea_server <- function(id) {
+plotarea_server <- function(id, phy_data) {
   shiny::moduleServer(
     id = id,
     module = function(input, output, session) {
@@ -306,8 +371,11 @@ plotarea_server <- function(id) {
 #' example usage.
 #' 
 #' @param id namespace id
+#' @param phy_data the treedata or phylo object being plotted. This is useful 
+#' to extract associated data that can be used to map variables onto tree aesthetics.
+#' 
 #' @export
-misc_ui <- function(id) {
+misc_ui <- function(id, phy_data) {
   ns <- NS(id)
   shiny::tagList(
     shiny::checkboxInput(
@@ -316,7 +384,7 @@ misc_ui <- function(id) {
       value = FALSE
     ),
     shiny::conditionalPanel(
-      condition = "input.expand_misc == true",
+      condition = "input.expand_misc === true",
       shiny::wellPanel(
         shiny::numericInput(
           inputId = ns("open_angle"),
@@ -336,7 +404,7 @@ misc_ui <- function(id) {
 
 #' @rdname show_modules
 #' @export
-misc_server <- function(id) {
+misc_server <- function(id, phy_data) {
   shiny::moduleServer(
     id = id,
     module = function(input, output, session) {
