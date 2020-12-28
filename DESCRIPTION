@@ -16,8 +16,8 @@ Imports:
     ape, 
     rlang, 
     stringr, 
-    treeio, 
-    viridis,
+    treeio,
+    tidytree,
     colourpicker,
     shinyjs
 Encoding: UTF-8

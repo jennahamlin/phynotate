@@ -12,9 +12,8 @@
 #' @importFrom stringr str_replace str_extract str_detect str_remove regex
 #' @importFrom ggtree ggtree geom_tiplab geom_tiplab2 geom_cladelabel
 #' @importFrom ggplot2 scale_x_continuous aes expansion geom_text
-#' @importFrom treeio as.treedata
-#' @importFrom viridis viridis
+#' @importFrom tidytree as_tibble as.phylo as.treedata
 #' @importFrom ape branching.times as.phylo getMRCA node.depth.edgelength
-#' @importFrom rlang .data exec
+#' @importFrom rlang .data exec !!!
 #' 
-NULL
+"_PACKAGE"
