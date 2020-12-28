@@ -170,25 +170,25 @@ example usage.</p>
 
 <span class='no'>uis_list</span>
 
-<span class='fu'>layout_ui</span>(<span class='no'>id</span>)
+<span class='fu'>layout_ui</span>(<span class='no'>id</span>, <span class='no'>phy_data</span>)
 
-<span class='fu'>layout_server</span>(<span class='no'>id</span>)
+<span class='fu'>layout_server</span>(<span class='no'>id</span>, <span class='no'>phy_data</span>)
 
-<span class='fu'>branches_ui</span>(<span class='no'>id</span>)
+<span class='fu'>branches_ui</span>(<span class='no'>id</span>, <span class='no'>phy_data</span>)
 
-<span class='fu'>branches_server</span>(<span class='no'>id</span>)
+<span class='fu'>branches_server</span>(<span class='no'>id</span>, <span class='no'>phy_data</span>)
 
-<span class='fu'>tips_ui</span>(<span class='no'>id</span>)
+<span class='fu'>tips_ui</span>(<span class='no'>id</span>, <span class='no'>phy_data</span>)
 
-<span class='fu'>tips_server</span>(<span class='no'>id</span>)
+<span class='fu'>tips_server</span>(<span class='no'>id</span>, <span class='no'>phy_data</span>)
 
-<span class='fu'>plotarea_ui</span>(<span class='no'>id</span>)
+<span class='fu'>plotarea_ui</span>(<span class='no'>id</span>, <span class='no'>phy_data</span>)
 
-<span class='fu'>plotarea_server</span>(<span class='no'>id</span>)
+<span class='fu'>plotarea_server</span>(<span class='no'>id</span>, <span class='no'>phy_data</span>)
 
-<span class='fu'>misc_ui</span>(<span class='no'>id</span>)
+<span class='fu'>misc_ui</span>(<span class='no'>id</span>, <span class='no'>phy_data</span>)
 
-<span class='fu'>misc_server</span>(<span class='no'>id</span>)</pre>
+<span class='fu'>misc_server</span>(<span class='no'>id</span>, <span class='no'>phy_data</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -196,6 +196,11 @@ example usage.</p>
     <tr>
       <th>id</th>
       <td><p>namespace id</p></td>
+    </tr>
+    <tr>
+      <th>phy_data</th>
+      <td><p>the treedata or phylo object being plotted. This is useful
+to extract associated data that can be used to map variables onto tree aesthetics.</p></td>
     </tr>
     </table>
 
