@@ -62,12 +62,12 @@ layout_ui <- function(id, phy_data) {
   ns <- NS(id)
   shiny::tagList(
     shiny::checkboxInput(
-      inputId = "expand_layout",
+      inputId = ns("expand_layout"),
       label = "Layout",
       value = FALSE
     ),
     shiny::conditionalPanel(
-      condition = "input.expand_layout === true",
+      condition = paste0("input['", ns("expand_layout"), "'] === true"),
       shiny::wellPanel(
         shiny::selectInput(
           inputId = ns("tree_layout"),
@@ -134,12 +134,12 @@ branches_ui <- function(id, phy_data) {
 
   shiny::tagList(
     shiny::checkboxInput(
-      inputId = "expand_branches",
+      inputId = ns("expand_branches"),
       label = "Branches",
       value = FALSE
     ),
     shiny::conditionalPanel(
-      condition = "input.expand_branches === true",
+      condition = paste0("input['", ns("expand_branches"), "'] === true"),
       shiny::wellPanel(
         shiny::radioButtons(
           inputId = ns("branch_size_type"),
@@ -237,12 +237,12 @@ tips_ui <- function(id, phy_data) {
   ns <- NS(id)
   shiny::tagList(
     shiny::checkboxInput(
-      inputId = "expand_tips",
+      inputId = ns("expand_tips"),
       label = "Tips",
       value = FALSE
     ),
     shiny::conditionalPanel(
-      condition = "input.expand_tips === true",
+      condition = paste0("input['", ns("expand_tips"), "'] === true"),
       shiny::wellPanel(
         shiny::helpText("Likely illegible for large trees"),
         shiny::checkboxInput(
@@ -320,12 +320,12 @@ plotarea_ui <- function(id, phy_data) {
   ns <- NS(id)
   shiny::tagList(
     shiny::checkboxInput(
-      inputId = "expand_resize",
+      inputId = ns("expand_resize"),
       label = "Plot area",
       value = FALSE
     ),
     shiny::conditionalPanel(
-      condition = "input.expand_resize === true",
+      condition = paste0("input['", ns("expand_resize"), "'] === true"),
       shiny::wellPanel(
         shiny::sliderInput(
           inputId = ns("height"),
@@ -379,12 +379,12 @@ misc_ui <- function(id, phy_data) {
   ns <- NS(id)
   shiny::tagList(
     shiny::checkboxInput(
-      inputId = "expand_misc",
+      inputId = ns("expand_misc"),
       label = "Miscellaneous",
       value = FALSE
     ),
     shiny::conditionalPanel(
-      condition = "input.expand_misc === true",
+      condition = paste0("input['", ns("expand_misc"), "'] === true"),
       shiny::wellPanel(
         shiny::numericInput(
           inputId = ns("open_angle"),
